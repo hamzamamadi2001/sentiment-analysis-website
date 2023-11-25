@@ -3,26 +3,25 @@ import './App.css';
 import { useState, useEffect } from 'react';
 
 function App() {
-    const [posts, setPosts] = useState("");
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        fetch('https://us-central1-protean-theater-329521.cloudfunctions.net/project', {
-           method: 'POST',
-           body: JSON.stringify({
-              "name": "Hamza",
-           }),
-           headers: {
-              'Content-type': 'application/json; charset=UTF-8',
-              "Access-Control-Allow-Origin" :"*"
-           },
-        })
-           .then((res) => res.json())
-           .then((post) => {
-              console.log(post)
-           })
-           .catch((err) => {
-              console.log(err.message);
-           });
+    const [text, setText] = useState("");
+    const [result, setResult] = useState({});
+
+    const  handleSubmit = async () => {
+        var formdata = new FormData();
+        formdata.append("text", text);
+        
+        var requestOptions = {
+          method: 'POST',
+          body: formdata,
+          redirect: 'follow'
+        };
+        
+        const response = await fetch("https://flask-a3lvt46pya-nw.a.run.app/", requestOptions)    
+        const data = await response.json();
+        console.log(data.positive)
+        setResult(data);
+        
+          
      };
 
 
@@ -30,8 +29,9 @@ function App() {
     <div className="App">
     <div style={{display:"flex",justifyContent:"center",alignItems:"center",marginTop:"30%",flexDirection:"column"}}>
         <p>Enter the text please !!</p>
-    <input ></input>
-    <button  onClick={handleSubmit}>send</button>
+    <input onChange={(e)=>{setText(e.target.value)}} ></input>
+    <button  onClick={async()=> await handleSubmit()}>send</button>
+    {result.length==0?(<></>):(<p>the positive :{result.positive} and negative : {result.negative} and netural:{result.netural}</p>)}
     </div>
     
     </div>
